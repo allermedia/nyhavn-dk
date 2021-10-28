@@ -6,8 +6,9 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 
 import {  Vpc, InstanceClass, InstanceSize, SubnetType } from '@aws-cdk/aws-ec2';
 
-import { CertificateStack, CertificateStackProbs } from '../lib/certificate-stack'
-import { NetworkStack, NetworkStackProbs } from '../lib/network-stack'
+import { CertificateStack, CertificateStackProbs } from './certificate-stack'
+import { NetworkStack, NetworkStackProbs } from './network-stack'
+import { HostingStack, HostingStackProbs } from './hosting-stack'
 
 
 export class NyhavnDkUmbracoStack extends cdk.Stack {
@@ -28,28 +29,50 @@ export class NyhavnDkUmbracoStack extends cdk.Stack {
         ],
       }),
     });
-
-    cdkPipeline.addStage(new HostingStageProd(this,'Hosting-Prod', {}))
-
+    cdkPipeline.addStage(new HostingStageStaging(this,'Hosting-Stage', {}))
   }
 }
 
 
-export class HostingStageProd extends Stage {
+export class HostingStageStaging extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
     const networkStack = new NetworkStack(this, 'Network', {
-      cidr: "10.25.0.0/16",
-      environment: "prod",
-      projectName: "nyhavn.dk prod server"
+      cidr: "10.26.0.0/16",
+      environment: "staging",
+      projectName: "stage.nyhavn.dk server"
     });
 
-    const certNyhavnDK = new CertificateStack(this, 'Certificate-NyhavnDk', {
-      domainName: "nyhavn.dk",
-      alternateNames: ['www.nyhavn.dk'],
-      projectName: "nyhavn.dk"
+    const certNyhavnDKStaging = new CertificateStack(this, 'Certificate-stageNyhavnDk', {
+      domainName: "stage.nyhavn.dk",
+      alternateNames: ['www.stage.nyhavn.dk'],
+      projectName: "stage.nyhavn.dk"
     });
-    certNyhavnDK.addDependency(networkStack);
+    certNyhavnDKStaging.addDependency(networkStack);
+
+    const nyhavnHostingStaging = new HostingStack(this, 'nyhavnHostingStaging', {
+      projectDescription: "stage-nyhavn-dk",
+      apexDomain: "stage.nyhavn.dk",
+      certificateArn: certNyhavnDKStaging.certificateArn,
+      environment: "staging",
+      vpc: networkStack.myVpc,
+      backup: "Week",
+      instanceClass: InstanceClass.T4G,
+      instanceSize: InstanceSize.LARGE,
+      instanceName: "tst-nyhavnstage01a",
+      instanceRootSize: 100,
+      instanceDatadiskSize: 350,
+      internetfacingLoadbalancer: false,
+      protectServer: false,
+      rdsIdentifier: "nyhavn-stage",
+      rdsAllocatedStorage: 30,
+      rdsMaxAllocatedStorage: 100,
+      rdsClass: InstanceClass.T4G,
+      rdsSize: InstanceSize.LARGE,
+      serverAmiString: "ami-082c0b4f77d193eba",
+      serverRole: "Webserver"
+    })
+    nyhavnHostingStaging.addDependency(certNyhavnDKStaging);
   }
 }
