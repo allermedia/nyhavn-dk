@@ -33,7 +33,6 @@ export class NyhavnDkUmbracoStack extends cdk.Stack {
   }
 }
 
-
 export class HostingStageStaging extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
@@ -44,6 +43,7 @@ export class HostingStageStaging extends Stage {
       projectName: "stage.nyhavn.dk server"
     });
 
+// Staging
     const certNyhavnDKStaging = new CertificateStack(this, 'Certificate-stageNyhavnDk', {
       domainName: "stage.nyhavn.dk",
       alternateNames: ['www.stage.nyhavn.dk'],
@@ -58,21 +58,57 @@ export class HostingStageStaging extends Stage {
       environment: "staging",
       vpc: networkStack.myVpc,
       backup: "Week",
-      instanceClass: InstanceClass.T4G,
+      instanceClass: InstanceClass.T3,
       instanceSize: InstanceSize.LARGE,
       instanceName: "tst-nyhavnstage01a",
       instanceRootSize: 100,
       instanceDatadiskSize: 350,
-      internetfacingLoadbalancer: false,
+      internetfacingLoadbalancer: true,
       protectServer: false,
       rdsIdentifier: "nyhavn-stage",
       rdsAllocatedStorage: 30,
       rdsMaxAllocatedStorage: 100,
-      rdsClass: InstanceClass.T4G,
+      rdsClass: InstanceClass.T3,
       rdsSize: InstanceSize.LARGE,
       serverAmiString: "ami-082c0b4f77d193eba",
       serverRole: "Webserver"
     })
     nyhavnHostingStaging.addDependency(certNyhavnDKStaging);
+
+// Production
+    const certNyhavnDKProd = new CertificateStack(this, 'Certificate-NyhavnDk', {
+      domainName: "nyhavn.dk",
+      alternateNames: ['www.nyhavn.dk'],
+      projectName: "nyhavn.dk"
+    });
+    certNyhavnDKProd.addDependency(networkStack);
+
+
+    const nyhavnHostingProd = new HostingStack(this, 'nyhavnHostingStaging', {
+      projectDescription: "nyhavn-dk",
+      apexDomain: "nyhavn.dk",
+      certificateArn: certNyhavnDKProd.certificateArn,
+      environment: "prod",
+      vpc: networkStack.myVpc,
+      backup: "Week",
+      instanceClass: InstanceClass.T3,
+      instanceSize: InstanceSize.LARGE,
+      instanceName: "prd-nyhavn01a",
+      instanceRootSize: 100,
+      instanceDatadiskSize: 350,
+      internetfacingLoadbalancer: true,
+      protectServer: false,
+      rdsIdentifier: "nyhavn",
+      rdsAllocatedStorage: 30,
+      rdsMaxAllocatedStorage: 100,
+      rdsClass: InstanceClass.T3,
+      rdsSize: InstanceSize.LARGE,
+      serverAmiString: "ami-082c0b4f77d193eba",
+      serverRole: "Webserver"
+    })
+    nyhavnHostingProd.addDependency(certNyhavnDKProd);
+
+
+
   }
 }
