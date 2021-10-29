@@ -37,26 +37,27 @@ export class HostingStageTest extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
-    const networkStack = new NetworkStack(this, 'Network', {
+
+// Test
+    const networkStackTest = new NetworkStack(this, 'NetworkTest', {
       cidr: "10.26.0.0/16",
       environment: "Test",
       projectName: "tst.nyhavn.dk server"
     });
 
-// Staging
     const certNyhavnDKTest = new CertificateStack(this, 'Certificate-testNyhavnDk', {
       domainName: "test.nyhavn.dk",
       alternateNames: ['www.test.nyhavn.dk'],
       projectName: "test.nyhavn.dk"
     });
-    certNyhavnDKTest.addDependency(networkStack);
+    certNyhavnDKTest.addDependency(networkStackTest);
 
     const nyhavnHostingTest = new HostingStack(this, 'nyhavnHostingTest', {
       projectDescription: "test-nyhavn-dk",
       apexDomain: "test.nyhavn.dk",
       certificateArn: certNyhavnDKTest.certificateArn,
       environment: "Test",
-      vpc: networkStack.myVpc,
+      vpc: networkStackTest.myVpc,
       backup: "Week",
       instanceClass: InstanceClass.T3,
       instanceSize: InstanceSize.LARGE,
@@ -76,12 +77,20 @@ export class HostingStageTest extends Stage {
     nyhavnHostingTest.addDependency(certNyhavnDKTest);
 
 // Production
+
+
+    const networkStackProd = new NetworkStack(this, 'NetworkProd', {
+      cidr: "10.25.0.0/16",
+      environment: "Test",
+      projectName: "tst.nyhavn.dk server"
+    });
+
     const certNyhavnDKProd = new CertificateStack(this, 'Certificate-NyhavnDk', {
       domainName: "nyhavn.dk",
       alternateNames: ['www.nyhavn.dk'],
       projectName: "nyhavn.dk"
     });
-    certNyhavnDKProd.addDependency(networkStack);
+    certNyhavnDKProd.addDependency(networkStackProd);
 
 
     const nyhavnHostingProd = new HostingStack(this, 'nyhavnHosting', {
@@ -89,7 +98,7 @@ export class HostingStageTest extends Stage {
       apexDomain: "nyhavn.dk",
       certificateArn: certNyhavnDKProd.certificateArn,
       environment: "Prod",
-      vpc: networkStack.myVpc,
+      vpc: networkStackProd.myVpc,
       backup: "Week",
       instanceClass: InstanceClass.T3,
       instanceSize: InstanceSize.LARGE,

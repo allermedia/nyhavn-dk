@@ -79,8 +79,8 @@ export class HostingStack extends Stack {
 
 
 // InstanceRole
-        const instanceRole = new Role(this, 'instanceRole-' + props.environment, {
-            roleName: 'instanceRole' + props.environment,
+        const instanceRole = new Role(this, 'serverInstanceRole-' + props.environment, {
+            roleName: 'serverInstanceRole' + props.environment,
             assumedBy: new ServicePrincipal('ec2.amazonaws.com')
         });
         instanceRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
