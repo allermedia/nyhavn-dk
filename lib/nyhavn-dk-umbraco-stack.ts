@@ -39,7 +39,7 @@ export class HostingStageTest extends Stage {
 
     const networkStack = new NetworkStack(this, 'Network', {
       cidr: "10.26.0.0/16",
-      environment: "test",
+      environment: "Test",
       projectName: "tst.nyhavn.dk server"
     });
 
@@ -55,7 +55,7 @@ export class HostingStageTest extends Stage {
       projectDescription: "test-nyhavn-dk",
       apexDomain: "test.nyhavn.dk",
       certificateArn: certNyhavnDKTest.certificateArn,
-      environment: "test",
+      environment: "Test",
       vpc: networkStack.myVpc,
       backup: "Week",
       instanceClass: InstanceClass.T3,
@@ -88,7 +88,7 @@ export class HostingStageTest extends Stage {
       projectDescription: "nyhavn-dk",
       apexDomain: "nyhavn.dk",
       certificateArn: certNyhavnDKProd.certificateArn,
-      environment: "prod",
+      environment: "Prod",
       vpc: networkStack.myVpc,
       backup: "Week",
       instanceClass: InstanceClass.T3,
