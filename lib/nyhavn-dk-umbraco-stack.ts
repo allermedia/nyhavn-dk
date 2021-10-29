@@ -29,7 +29,8 @@ export class NyhavnDkUmbracoStack extends cdk.Stack {
         ],
       }),
     });
-    cdkPipeline.addStage(new HostingStageTest(this,'Hosting-Test', {}))
+    cdkPipeline.addStage(new HostingStageTest(this,'HostingTest', {}))
+    cdkPipeline.addStage(new HostingStageProd(this,'HostingProd', {}))
   }
 }
 
@@ -66,7 +67,7 @@ export class HostingStageTest extends Stage {
       instanceDatadiskSize: 350,
       internetfacingLoadbalancer: true,
       protectServer: false,
-      rdsIdentifier: "nyhavn-test",
+      rdsIdentifier: "nyhavn",
       rdsAllocatedStorage: 30,
       rdsMaxAllocatedStorage: 100,
       rdsClass: InstanceClass.T3,
@@ -76,8 +77,16 @@ export class HostingStageTest extends Stage {
     })
     nyhavnHostingTest.addDependency(certNyhavnDKTest);
 
-// Production
+  }
+}
 
+
+
+export class HostingStageProd extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+// Production
 
     const networkStackProd = new NetworkStack(this, 'NetworkProd', {
       cidr: "10.25.0.0/16",
