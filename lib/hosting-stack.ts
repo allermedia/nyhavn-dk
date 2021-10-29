@@ -70,6 +70,14 @@ export class HostingStack extends Stack {
         serverSecurityGroup.addIngressRule(Peer.ipv4('185.69.56.209/32'), Port.tcpRange(49152, 65535), 'Allow FTP-PassiveMode access from DeployHQ');
         serverSecurityGroup.addIngressRule(Peer.ipv4('185.69.56.210/32'), Port.tcpRange(49152, 65535), 'Allow FTP-PassiveMode access from DeployHQ');
 
+
+        const publicSecurityGroup = new SecurityGroup(this, 'PublicSecurityGroup-' + props.environment, {
+            vpc: props.vpc
+        })
+        publicSecurityGroup.addIngressRule(Peer.ipv4('0.0.0.0/0'), Port.tcp(80), 'Allow HTTP access from Everywhere');
+        publicSecurityGroup.addIngressRule(Peer.ipv4('0.0.0.0/0'), Port.tcp(443), 'Allow HTTPS access from Everywhere');
+
+
 // InstanceRole
         const instanceRole = new Role(this, 'instanceRole-' + props.environment, {
             roleName: 'instanceRole' + props.environment,
@@ -166,11 +174,15 @@ export class HostingStack extends Stack {
             deletionProtection: props.protectServer,
             http2Enabled: true,
             idleTimeout: Duration.seconds(30),
-            internetFacing: props.internetfacingLoadbalancer,
+            internetFacing: true,
             ipAddressType: IpAddressType.IPV4,
             securityGroup: serverSecurityGroup,
         });
         Tags.of(loadbalancer).add('Environment', props.environment);
+
+        if(props.internetfacingLoadbalancer) {
+            loadbalancer.addSecurityGroup(publicSecurityGroup)
+        }
 
         const httpListener = loadbalancer.addListener('http-'+ props.environment, {
             port: 80,

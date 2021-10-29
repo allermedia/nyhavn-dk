@@ -39,33 +39,33 @@ export class HostingStageStaging extends Stage {
 
     const networkStack = new NetworkStack(this, 'Network', {
       cidr: "10.26.0.0/16",
-      environment: "staging",
-      projectName: "stage.nyhavn.dk server"
+      environment: "test",
+      projectName: "tst.nyhavn.dk server"
     });
 
 // Staging
-    const certNyhavnDKStaging = new CertificateStack(this, 'Certificate-stageNyhavnDk', {
-      domainName: "stage.nyhavn.dk",
-      alternateNames: ['www.stage.nyhavn.dk'],
-      projectName: "stage.nyhavn.dk"
+    const certNyhavnDKTest = new CertificateStack(this, 'Certificate-testNyhavnDk', {
+      domainName: "test.nyhavn.dk",
+      alternateNames: ['www.test.nyhavn.dk'],
+      projectName: "test.nyhavn.dk"
     });
-    certNyhavnDKStaging.addDependency(networkStack);
+    certNyhavnDKTest.addDependency(networkStack);
 
-    const nyhavnHostingStaging = new HostingStack(this, 'nyhavnHostingStaging', {
-      projectDescription: "stage-nyhavn-dk",
-      apexDomain: "stage.nyhavn.dk",
-      certificateArn: certNyhavnDKStaging.certificateArn,
-      environment: "staging",
+    const nyhavnHostingTest = new HostingStack(this, 'nyhavnHostingTest', {
+      projectDescription: "test-nyhavn-dk",
+      apexDomain: "test.nyhavn.dk",
+      certificateArn: certNyhavnDKTest.certificateArn,
+      environment: "test",
       vpc: networkStack.myVpc,
       backup: "Week",
       instanceClass: InstanceClass.T3,
       instanceSize: InstanceSize.LARGE,
-      instanceName: "tst-nyhavnstage01a",
+      instanceName: "tst-nyhavn01a",
       instanceRootSize: 100,
       instanceDatadiskSize: 350,
       internetfacingLoadbalancer: true,
       protectServer: false,
-      rdsIdentifier: "nyhavn-stage",
+      rdsIdentifier: "nyhavn-test",
       rdsAllocatedStorage: 30,
       rdsMaxAllocatedStorage: 100,
       rdsClass: InstanceClass.T3,
@@ -73,7 +73,7 @@ export class HostingStageStaging extends Stage {
       serverAmiString: "ami-082c0b4f77d193eba",
       serverRole: "Webserver"
     })
-    nyhavnHostingStaging.addDependency(certNyhavnDKStaging);
+    nyhavnHostingTest.addDependency(certNyhavnDKTest);
 
 // Production
     const certNyhavnDKProd = new CertificateStack(this, 'Certificate-NyhavnDk', {
@@ -84,7 +84,7 @@ export class HostingStageStaging extends Stage {
     certNyhavnDKProd.addDependency(networkStack);
 
 
-    const nyhavnHostingProd = new HostingStack(this, 'nyhavnHostingStaging', {
+    const nyhavnHostingProd = new HostingStack(this, 'nyhavnHosting', {
       projectDescription: "nyhavn-dk",
       apexDomain: "nyhavn.dk",
       certificateArn: certNyhavnDKProd.certificateArn,
@@ -107,8 +107,6 @@ export class HostingStageStaging extends Stage {
       serverRole: "Webserver"
     })
     nyhavnHostingProd.addDependency(certNyhavnDKProd);
-
-
 
   }
 }
