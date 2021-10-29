@@ -29,11 +29,11 @@ export class NyhavnDkUmbracoStack extends cdk.Stack {
         ],
       }),
     });
-    cdkPipeline.addStage(new HostingStageStaging(this,'Hosting-Stage', {}))
+    cdkPipeline.addStage(new HostingStageTest(this,'Hosting-Test', {}))
   }
 }
 
-export class HostingStageStaging extends Stage {
+export class HostingStageTest extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
