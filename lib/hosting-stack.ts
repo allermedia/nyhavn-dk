@@ -99,12 +99,6 @@ export class HostingStack extends Stack {
 
         // Userdata for
         const userData = UserData.forWindows();
-        userData.addCommands(
-            "ADD-WindowsFeature RSAT-AD-Tools",
-            "ADD-WindowsFeature RSAT-DNS-Server",
-            "ADD-WindowsFeature GPMC",
-            "ADD-WindowsFeature RSAT-AD-PowerShell"
-        );
 
         // Userdata to install IIS
         userData.addCommands("Install-WindowsFeature -name Web-Server -IncludeManagementTools");
@@ -118,8 +112,26 @@ export class HostingStack extends Stack {
         )
 
         userData.addCommands(
+            "New-LocalUser 'allerops' -FullName 'AllerOps' -Description 'Aller Ops User' -NoPassword",
+            "Set-LocalUser -Name 'allerops' -PasswordNeverExpires:$true",
+            "Add-LocalGroupMember -Group Administrators -Member allerops",
+            "New-LocalUser 'easyflow' -FullName 'Easyflow' -Description 'Easyflow User' -NoPassword",
+            "Set-LocalUser -Name 'easyflow' -PasswordNeverExpires:$true",
+            "Add-LocalGroupMember -Group Administrators -Member easyflow"
+        );
+
+        userData.addCommands(
+            "New-Partition -DiskNumber 1 -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel 'Data01'",
+            "Get-Partition -DiskNumber 2 -PartitionNumber 2 | Set-Partition -NewDriveLetter G"
+        )
+
+
+        userData.addCommands(
             "Rename-Computer -NewName " + props.instanceName + " -Restart"
         );
+
+
+
 
         const server = new Instance(this, "adminServer", {
             vpc: props.vpc,
