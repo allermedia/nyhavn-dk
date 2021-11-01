@@ -35,7 +35,8 @@ export class HostingStack extends Stack {
 
 // SecurityGroup
         const serverSecurityGroup = new SecurityGroup(this, 'ServerSecurityGroup-' + props.environment, {
-            vpc: props.vpc
+            vpc: props.vpc,
+            allowAllOutbound: true
         })
 
         Tags.of(serverSecurityGroup).add('Environment', props.environment);
@@ -76,6 +77,19 @@ export class HostingStack extends Stack {
         })
         publicSecurityGroup.addIngressRule(Peer.ipv4('0.0.0.0/0'), Port.tcp(80), 'Allow HTTP access from Everywhere');
         publicSecurityGroup.addIngressRule(Peer.ipv4('0.0.0.0/0'), Port.tcp(443), 'Allow HTTPS access from Everywhere');
+        publicSecurityGroup.addIngressRule(serverSecurityGroup, Port.allTraffic(), "Allow securitygroup to talk to server security Group");
+
+
+        const privateSecurityGroup = new SecurityGroup(this, 'PrivateSecurityGroup-' + props.environment, {
+            vpc: props.vpc
+        })
+        publicSecurityGroup.addIngressRule(Peer.ipv4('0.0.0.0/0'), Port.tcp(80), 'Allow HTTP access from Everywhere');
+        publicSecurityGroup.addIngressRule(Peer.ipv4('0.0.0.0/0'), Port.tcp(443), 'Allow HTTPS access from Everywhere');
+        publicSecurityGroup.addIngressRule(serverSecurityGroup, Port.allTraffic(), "Allow securitygroup to talk to server security Group");
+        publicSecurityGroup.addIngressRule(Peer.ipv4('91.199.217.134/32'), Port.tcp(80), 'Allow HTTP access from Aller office Havneholmen');
+        publicSecurityGroup.addIngressRule(Peer.ipv4('91.199.217.134/32'), Port.tcp(443), 'Allow HTTPS access from Aller office Havneholmen');
+        publicSecurityGroup.addIngressRule(Peer.ipv4('77.243.39.42/32'), Port.tcp(80), 'Allow HTTP access from Easyflow');
+        publicSecurityGroup.addIngressRule(Peer.ipv4('77.243.39.42/32'), Port.tcp(443), 'Allow HTTPS access from Easyflow');
 
 
 // InstanceRole
@@ -188,7 +202,7 @@ export class HostingStack extends Stack {
             idleTimeout: Duration.seconds(30),
             internetFacing: true,
             ipAddressType: IpAddressType.IPV4,
-            securityGroup: serverSecurityGroup,
+            securityGroup: privateSecurityGroup,
         });
         Tags.of(loadbalancer).add('Environment', props.environment);
         Tags.of(loadbalancer).add('Project', props.projectDescription + "-" + props.environment);
