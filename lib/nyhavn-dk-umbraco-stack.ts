@@ -112,7 +112,7 @@ export class HostingStageProd extends Stage {
       instanceName: "prd-nyhavn01a",
       instanceRootSize: 100,
       instanceDatadiskSize: 350,
-      internetfacingLoadbalancer: false,
+      internetfacingLoadbalancer: true,
       protectServer: false,
       rdsIdentifier: "nyhavn",
       rdsAllocatedStorage: 30,

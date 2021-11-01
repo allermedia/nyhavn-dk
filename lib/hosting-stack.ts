@@ -169,7 +169,7 @@ export class HostingStack extends Stack {
 // LoadBalancer
         const cert = Certificate.fromCertificateArn(this, 'loadbalancer-certificate', props.certificateArn);
 
-        const loadbalancer = new ApplicationLoadBalancer(this, 'loadbalancer-' + props.environment, {
+        const loadbalancer = new ApplicationLoadBalancer(this, 'lb-' + props.environment, {
             vpc: props.vpc,
             deletionProtection: props.protectServer,
             http2Enabled: true,
@@ -179,6 +179,8 @@ export class HostingStack extends Stack {
             securityGroup: serverSecurityGroup,
         });
         Tags.of(loadbalancer).add('Environment', props.environment);
+        Tags.of(loadbalancer).add('Project', props.projectDescription + "-" + props.environment);
+
 
         if(props.internetfacingLoadbalancer) {
             loadbalancer.addSecurityGroup(publicSecurityGroup)
