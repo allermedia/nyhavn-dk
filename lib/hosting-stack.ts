@@ -82,16 +82,6 @@ export class HostingStack extends Stack {
         publicSecurityGroup.addIngressRule(serverSecurityGroup, Port.allTraffic(), "Allow securitygroup to talk to server security Group");
 
 
-        const privateSecurityGroup = new SecurityGroup(this, 'PrivateSecurityGroup-' + props.environment, {
-            vpc: props.vpc
-        })
-        privateSecurityGroup.addIngressRule(serverSecurityGroup, Port.allTraffic(), "Allow securitygroup to talk to server security Group");
-        privateSecurityGroup.addIngressRule(Peer.ipv4('91.199.217.134/32'), Port.tcp(80), 'Allow HTTP access from Aller office Havneholmen');
-        privateSecurityGroup.addIngressRule(Peer.ipv4('91.199.217.134/32'), Port.tcp(443), 'Allow HTTPS access from Aller office Havneholmen');
-        privateSecurityGroup.addIngressRule(Peer.ipv4('77.243.39.42/32'), Port.tcp(80), 'Allow HTTP access from Easyflow');
-        privateSecurityGroup.addIngressRule(Peer.ipv4('77.243.39.42/32'), Port.tcp(443), 'Allow HTTPS access from Easyflow');
-
-
 // InstanceRole
         const instanceRole = new Role(this, 'serverInstanceRole-' + props.environment, {
             roleName: 'serverInstanceRole' + props.environment,
@@ -115,7 +105,11 @@ export class HostingStack extends Stack {
         const userData = UserData.forWindows();
 
         // Userdata to install IIS
-        userData.addCommands("Install-WindowsFeature -name Web-Server -IncludeManagementTools");
+        userData.addCommands("Install-WindowsFeature -name Web-Server -IncludeAllSubFeature -IncludeManagementTools");
+
+        // Userdata to install FTP
+        userData.addCommands("Install-WindowsFeature Web-FTP-Server -IncludeAllSubFeature");
+
 
         // Userdata to Install mssql studio
         userData.addCommands(
@@ -200,26 +194,26 @@ export class HostingStack extends Stack {
             idleTimeout: Duration.seconds(30),
             internetFacing: true,
             ipAddressType: IpAddressType.IPV4,
-            securityGroup: privateSecurityGroup,
+            securityGroup: serverSecurityGroup,
         });
         Tags.of(loadbalancer).add('Environment', props.environment);
         Tags.of(loadbalancer).add('Project', props.projectDescription + "-" + props.environment);
 
-
+        let listenerOpenStatus = false
         if(props.internetfacingLoadbalancer) {
-            loadbalancer.addSecurityGroup(publicSecurityGroup)
+            listenerOpenStatus = true
         }
 
         const httpListener = loadbalancer.addListener('http-'+ props.environment, {
             port: 80,
-            open: true,
+            open: listenerOpenStatus,
             protocol: ApplicationProtocol.HTTP,
             defaultAction: ListenerAction.redirect({ permanent: true, port: '443', protocol: ApplicationProtocol.HTTPS, })
         });
 
         const httpsListener = loadbalancer.addListener('https-'+ props.environment, {
             port: 443,
-            open: true,
+            open: listenerOpenStatus,
             certificates: [cert],
             protocol: ApplicationProtocol.HTTPS,
             sslPolicy: SslPolicy.TLS12,
