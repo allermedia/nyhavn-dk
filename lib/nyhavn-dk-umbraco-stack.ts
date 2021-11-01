@@ -65,7 +65,7 @@ export class HostingStageTest extends Stage {
       instanceName: "tst-nyhavn01a",
       instanceRootSize: 100,
       instanceDatadiskSize: 350,
-      internetfacingLoadbalancer: true,
+      internetfacingLoadbalancer: false,
       protectServer: false,
       rdsIdentifier: "nyhavn",
       rdsAllocatedStorage: 30,
@@ -76,10 +76,8 @@ export class HostingStageTest extends Stage {
       serverRole: "Webserver"
     })
     nyhavnHostingTest.addDependency(certNyhavnDKTest);
-
   }
 }
-
 
 
 export class HostingStageProd extends Stage {
@@ -114,7 +112,7 @@ export class HostingStageProd extends Stage {
       instanceName: "prd-nyhavn01a",
       instanceRootSize: 100,
       instanceDatadiskSize: 350,
-      internetfacingLoadbalancer: true,
+      internetfacingLoadbalancer: false,
       protectServer: false,
       rdsIdentifier: "nyhavn",
       rdsAllocatedStorage: 30,
