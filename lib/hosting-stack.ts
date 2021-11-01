@@ -6,6 +6,8 @@ import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, I
 import { InstanceTarget } from '@aws-cdk/aws-elasticloadbalancingv2-targets';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 
+import {readFileSync} from 'fs';
+
 export interface HostingStackProbs extends StackProps {
     projectDescription: string,
     environment: string,
@@ -142,9 +144,6 @@ export class HostingStack extends Stack {
         userData.addCommands(
             "Rename-Computer -NewName " + props.instanceName + " -Restart"
         );
-
-
-
 
         const server = new Instance(this, "adminServer", {
             vpc: props.vpc,
