@@ -88,8 +88,8 @@ export class HostingStageProd extends Stage {
 
     const networkStackProd = new NetworkStack(this, 'NetworkProd', {
       cidr: "10.25.0.0/16",
-      environment: "Test",
-      projectName: "tst.nyhavn.dk server"
+      environment: "Prod",
+      projectName: "prd.nyhavn.dk server"
     });
 
     const certNyhavnDKProd = new CertificateStack(this, 'Certificate-NyhavnDk', {
