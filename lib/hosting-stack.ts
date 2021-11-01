@@ -83,13 +83,11 @@ export class HostingStack extends Stack {
         const privateSecurityGroup = new SecurityGroup(this, 'PrivateSecurityGroup-' + props.environment, {
             vpc: props.vpc
         })
-        publicSecurityGroup.addIngressRule(Peer.ipv4('0.0.0.0/0'), Port.tcp(80), 'Allow HTTP access from Everywhere');
-        publicSecurityGroup.addIngressRule(Peer.ipv4('0.0.0.0/0'), Port.tcp(443), 'Allow HTTPS access from Everywhere');
-        publicSecurityGroup.addIngressRule(serverSecurityGroup, Port.allTraffic(), "Allow securitygroup to talk to server security Group");
-        publicSecurityGroup.addIngressRule(Peer.ipv4('91.199.217.134/32'), Port.tcp(80), 'Allow HTTP access from Aller office Havneholmen');
-        publicSecurityGroup.addIngressRule(Peer.ipv4('91.199.217.134/32'), Port.tcp(443), 'Allow HTTPS access from Aller office Havneholmen');
-        publicSecurityGroup.addIngressRule(Peer.ipv4('77.243.39.42/32'), Port.tcp(80), 'Allow HTTP access from Easyflow');
-        publicSecurityGroup.addIngressRule(Peer.ipv4('77.243.39.42/32'), Port.tcp(443), 'Allow HTTPS access from Easyflow');
+        privateSecurityGroup.addIngressRule(serverSecurityGroup, Port.allTraffic(), "Allow securitygroup to talk to server security Group");
+        privateSecurityGroup.addIngressRule(Peer.ipv4('91.199.217.134/32'), Port.tcp(80), 'Allow HTTP access from Aller office Havneholmen');
+        privateSecurityGroup.addIngressRule(Peer.ipv4('91.199.217.134/32'), Port.tcp(443), 'Allow HTTPS access from Aller office Havneholmen');
+        privateSecurityGroup.addIngressRule(Peer.ipv4('77.243.39.42/32'), Port.tcp(80), 'Allow HTTP access from Easyflow');
+        privateSecurityGroup.addIngressRule(Peer.ipv4('77.243.39.42/32'), Port.tcp(443), 'Allow HTTPS access from Easyflow');
 
 
 // InstanceRole
@@ -135,8 +133,9 @@ export class HostingStack extends Stack {
         );
 
         userData.addCommands(
+            "Initialize-Disk -Number 1",
             "New-Partition -DiskNumber 1 -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel 'Data01'",
-            "Get-Partition -DiskNumber 2 -PartitionNumber 2 | Set-Partition -NewDriveLetter G"
+            "Get-Partition -DiskNumber 1 -PartitionNumber 2 | Set-Partition -NewDriveLetter G"
         )
 
 
