@@ -94,7 +94,7 @@ export class HostingStageProd extends Stage {
 
     const certNyhavnDKProd = new CertificateStack(this, 'Certificate-NyhavnDk', {
       domainName: "nyhavn.dk",
-      alternateNames: ['www.nyhavn.dk'],
+      alternateNames: ['www.nyhavn.dk', 'blog.nyhavn.dk', 'www.blog.nyhavn.dk'],
       projectName: "nyhavn.dk"
     });
     certNyhavnDKProd.addDependency(networkStackProd);

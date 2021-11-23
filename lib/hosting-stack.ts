@@ -235,10 +235,11 @@ export class HostingStack extends Stack {
         httpsListener.addAction('redirect'+ props.environment, {
             priority: 10,
             conditions: [
-                ListenerCondition.hostHeaders([props.apexDomain])
+                ListenerCondition.hostHeaders([props.apexDomain, "blog." + props.apexDomain])
             ],
             action: ListenerAction.forward([targetGroup])
         });
+
 
         // Redirects
         httpsListener.addAction('wwwRedirect'+ props.environment, {
