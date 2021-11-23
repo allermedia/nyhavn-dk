@@ -94,10 +94,19 @@ export class HostingStageProd extends Stage {
 
     const certNyhavnDKProd = new CertificateStack(this, 'Certificate-NyhavnDk', {
       domainName: "nyhavn.dk",
-      alternateNames: ['www.nyhavn.dk', 'blog.nyhavn.dk', 'www.blog.nyhavn.dk'],
+      alternateNames: ['www.nyhavn.dk'],
       projectName: "nyhavn.dk"
     });
     certNyhavnDKProd.addDependency(networkStackProd);
+
+    const certNyhavnDKProdNy = new CertificateStack(this, 'Certificate-NyhavnDkNy', {
+      domainName: "nyhavn.dk",
+      alternateNames: ['www.nyhavn.dk', 'blog.nyhavn.dk', 'www.blog.nyhavn.dk'],
+      projectName: "nyhavn.dk"
+    });
+    certNyhavnDKProdNy.addDependency(networkStackProd);
+
+
 
 
     const nyhavnHostingProd = new HostingStack(this, 'nyhavnHosting', {
