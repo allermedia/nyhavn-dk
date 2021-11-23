@@ -112,7 +112,7 @@ export class HostingStageProd extends Stage {
     const nyhavnHostingProd = new HostingStack(this, 'nyhavnHosting', {
       projectDescription: "nyhavn-dk",
       apexDomain: "nyhavn.dk",
-      certificateArn: certNyhavnDKProd.certificateArn,
+      certificateArn: certNyhavnDKProdNy.certificateArn,
       environment: "Prod",
       vpc: networkStackProd.myVpc,
       backup: "Week",
