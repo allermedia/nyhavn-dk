@@ -92,13 +92,6 @@ export class HostingStageProd extends Stage {
       projectName: "prd.nyhavn.dk server"
     });
 
-    const certNyhavnDKProd = new CertificateStack(this, 'Certificate-NyhavnDk', {
-      domainName: "nyhavn.dk",
-      alternateNames: ['www.nyhavn.dk'],
-      projectName: "nyhavn.dk"
-    });
-    certNyhavnDKProd.addDependency(networkStackProd);
-
     const certNyhavnDKProdNy = new CertificateStack(this, 'Certificate-NyhavnDkNy', {
       domainName: "nyhavn.dk",
       alternateNames: ['www.nyhavn.dk', 'blog.nyhavn.dk', 'www.blog.nyhavn.dk'],
@@ -131,7 +124,7 @@ export class HostingStageProd extends Stage {
       serverAmiString: "ami-082c0b4f77d193eba",
       serverRole: "Webserver"
     })
-    nyhavnHostingProd.addDependency(certNyhavnDKProd);
+    nyhavnHostingProd.addDependency(certNyhavnDKProNy);
 
   }
 }
