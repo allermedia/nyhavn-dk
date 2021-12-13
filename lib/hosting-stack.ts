@@ -146,7 +146,7 @@ export class HostingStack extends Stack {
             machineImage: serverAmi,
             securityGroup: serverSecurityGroup,
             vpcSubnets: { subnetType: SubnetType.PUBLIC },
-            userDataCausesReplacement: true,
+            userDataCausesReplacement: false,
             blockDevices: [
                 {
                     deviceName: '/dev/sda1',
