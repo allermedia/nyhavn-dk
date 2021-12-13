@@ -124,7 +124,7 @@ export class HostingStageProd extends Stage {
       serverAmiString: "ami-082c0b4f77d193eba",
       serverRole: "Webserver"
     })
-    nyhavnHostingProd.addDependency(certNyhavnDKProNy);
+    nyhavnHostingProd.addDependency(certNyhavnDKProdNy);
 
   }
 }
