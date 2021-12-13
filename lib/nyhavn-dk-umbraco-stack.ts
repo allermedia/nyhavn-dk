@@ -109,7 +109,7 @@ export class HostingStageProd extends Stage {
       environment: "Prod",
       vpc: networkStackProd.myVpc,
       backup: "Week",
-      instanceClass: InstanceClass.T3,
+      instanceClass: InstanceClass.M5,
       instanceSize: InstanceSize.LARGE,
       instanceName: "prd-nyhavn01a",
       instanceRootSize: 100,
